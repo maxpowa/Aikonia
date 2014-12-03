@@ -1,15 +1,15 @@
-package maxpowa.akonia.common.event;
+package maxpowa.aikonia.common.event;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
-import maxpowa.akonia.common.util.WorldData;
+import maxpowa.aikonia.common.util.WorldData;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
 
-public class AkoniaEventBus {
+public class AikoniaEventBus {
 
     @SubscribeEvent
     public void PlayerTickEvent(TickEvent.PlayerTickEvent event) {

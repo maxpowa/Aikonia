@@ -1,4 +1,4 @@
-package maxpowa.akonia.common;
+package maxpowa.aikonia.common;
 
 public class CommonProxy {
 

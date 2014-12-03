@@ -1,13 +1,13 @@
-package maxpowa.akonia.common.util;
+package maxpowa.aikonia.common.util;
 
-import maxpowa.akonia.Akonia;
+import maxpowa.aikonia.Aikonia;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 
 public class WorldData extends WorldSavedData {
 
-   final static String key = Akonia.MODID;
+   final static String key = Aikonia.MODID;
    
    public static WorldData forWorld(World world) {
       WorldData result = (WorldData) world.perWorldStorage.loadData(WorldData.class, key);

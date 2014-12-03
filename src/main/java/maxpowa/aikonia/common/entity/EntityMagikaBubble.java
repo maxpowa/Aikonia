@@ -1,6 +1,6 @@
-package maxpowa.akonia.common.entity;
+package maxpowa.aikonia.common.entity;
 
-import maxpowa.akonia.common.event.PlayerPickupMagikaBubbleEvent;
+import maxpowa.aikonia.common.event.PlayerPickupMagikaBubbleEvent;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;

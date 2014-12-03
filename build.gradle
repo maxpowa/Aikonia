@@ -18,8 +18,8 @@ buildscript {
 apply plugin: 'forge'
 
 version = "1.0"
-group= "maxpowa.akonia" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Akonia"
+group= "maxpowa.aikonia" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "Aikonia"
 
 minecraft {
     version = "1.7.10-10.13.2.1230"

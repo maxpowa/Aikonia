@@ -1,6 +1,6 @@
-package maxpowa.akonia.common.event;
+package maxpowa.aikonia.common.event;
 
-import maxpowa.akonia.common.entity.EntityMagikaBubble;
+import maxpowa.aikonia.common.entity.EntityMagikaBubble;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import cpw.mods.fml.common.eventhandler.Cancelable;

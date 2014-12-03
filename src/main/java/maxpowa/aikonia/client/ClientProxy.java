@@ -1,6 +1,6 @@
-package maxpowa.akonia.client;
+package maxpowa.aikonia.client;
 
-import maxpowa.akonia.common.CommonProxy;
+import maxpowa.aikonia.common.CommonProxy;
 
 public class ClientProxy extends CommonProxy {
 	
