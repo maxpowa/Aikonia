@@ -1,5 +1,7 @@
 package maxpowa.aikonia.common.entity;
 
+import java.util.List;
+
 import maxpowa.aikonia.Aikonia;
 import maxpowa.aikonia.common.event.MagikaBubbleCollideEvent;
 import maxpowa.aikonia.common.packet.MagikaBubbleSoundPacket;
@@ -9,8 +11,8 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.relauncher.Side;
@@ -36,10 +38,11 @@ public class EntityMagikaBubble extends Entity
         this.yOffset = this.height / 2.0F;
         this.setPosition(x, y, z);
         this.rotationYaw = (float)(Math.random() * 360.0D);
-        this.motionX = (double)((float)(Math.random() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);
+        this.motionX = (double)((float)(Math.random() * 0.20000000298023224D) * 2.0F);
         this.motionY = (double)((float)(Math.random() * 0.2D) * 2.0F);
-        this.motionZ = (double)((float)(Math.random() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);
+        this.motionZ = (double)((float)(Math.random() * 0.20000000298023224D) * 2.0F);
         this.xpValue = value;
+        this.noClip = true;
     }
 
     protected boolean canTriggerWalking() { 
@@ -86,23 +89,27 @@ public class EntityMagikaBubble extends Entity
     /**
      * Called to update the entity's position/logic.
      */
-    public void onUpdate()
+    @SuppressWarnings("unchecked")
+	public void onUpdate()
     {
+    	this.noClip = true;
         super.onUpdate();
+        
+        this.motionY += 0.01;
 
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
-        this.motionY -= 0.029999999329447746D;
+        this.motionY -= 0.02D;
 
-        this.func_145771_j(this.posX, (this.boundingBox.minY + this.boundingBox.maxY) / 2.0D, this.posZ);
-        double d0 = 8.0D;
+        double d0 = 16.0D;
 
         if (this.xpTargetColor < this.xpColor - 20 + this.getEntityId() % 100)
         {
-            if (this.closestEntity == null || this.closestEntity.getDistanceSqToEntity(this) > d0 * d0)
+            if (this.closestEntity == null || this.closestEntity.getDistanceSqToEntity(this) > d0 * d0 || this.closestEntity.isDead)
             {
                 this.closestEntity = Util.getClosestLivingEntityToEntity(this, d0);
+                //System.out.println("Getting close entity");
             }
 
             this.xpTargetColor = this.xpColor;
@@ -128,22 +135,28 @@ public class EntityMagikaBubble extends Entity
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
         float f = 0.98F;
 
-        if (this.onGround)
-        {
-            f = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.98F;
-        }
-
         this.motionX *= (double)f;
-        this.motionY *= 0.9800000190734863D;
+        this.motionY *= 0.5800000190734863D;
         this.motionZ *= (double)f;
-
-        if (this.onGround)
-        {
-            this.motionY *= -0.8999999761581421D;
-        }
 
         ++this.xpColor;
         ++this.xpOrbAge;
+        
+        AxisAlignedBB box = boundingBox.expand(0.1D, 0.1D, 0.1D);
+        List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, box);
+
+        if (list != null && !list.isEmpty())
+        {
+            for (int k = 0; k < list.size(); ++k)
+            {
+                Entity entity = (Entity)list.get(k);
+
+                if (entity != this.riddenByEntity && entity.canBePushed())
+                {
+                    this.applyEntityCollision(entity);
+                }
+            }
+        }
 
         if (this.xpOrbAge >= 6000)
         {
@@ -198,11 +211,11 @@ public class EntityMagikaBubble extends Entity
             if (livingEntity != null)
             {
             	if (MinecraftForge.EVENT_BUS.post(new MagikaBubbleCollideEvent(livingEntity, this))) return;
-                this.worldObj.playSoundAtEntity(entity, "random.hiss", 0.1F, 0.5F * ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.8F));
+                this.worldObj.playSoundAtEntity(entity, "random.orb", 0.1F, 0.5F * ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.8F));
                 if (livingEntity instanceof EntityPlayerMP)
-                	Aikonia.net.sendTo(new MagikaBubbleSoundPacket("random.hiss"), (EntityPlayerMP)livingEntity);
+                	Aikonia.net.sendTo(new MagikaBubbleSoundPacket("random.orb"), (EntityPlayerMP)livingEntity);
                 this.setDead();
-                System.out.println("You killed me billy!");
+                //System.out.println("You killed me billy!");
             }
         }
     }

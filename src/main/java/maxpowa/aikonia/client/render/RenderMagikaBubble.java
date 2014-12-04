@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
@@ -35,10 +34,10 @@ public class RenderMagikaBubble extends Render
      */
     public void doRender(EntityMagikaBubble entity, double x, double y, double z, float f, float partialTicks)
     {
-        System.out.println("Rendering now...");
+        //System.out.println("Rendering now...");
         GL11.glPushMatrix();
         GL11.glTranslatef((float)x, (float)y, (float)z);
-        this.bindEntityTexture(entity);
+        this.bindTexture(this.getEntityTexture(entity));
         int i = entity.getTextureByXP();
         float f2 = (float)(i % 4 * 16 + 0) / 64.0F;
         float f3 = (float)(i % 4 * 16 + 16) / 64.0F;
@@ -54,9 +53,9 @@ public class RenderMagikaBubble extends Render
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float f10 = 255.0F;
         float f11 = ((float)entity.xpColor + partialTicks) / 2.0F;
-        l = (int)((MathHelper.sin(f11 + 0.0F) + 1.0F) * 0.5F * f10);
-        int i1 = (int)f10;
-        int j1 = (int)((MathHelper.sin(f11 + 4.1887903F) + 1.0F) * 0.1F * f10);
+        l = (int)((MathHelper.sin(f11 + 4.1887903F) + 1.0F) * 0.1F * f10);
+        int i1 = (int)((MathHelper.sin(f11 + 0.0F) + 1.0F) * 0.5F * f10);
+        int j1 = (int)(f10-50f);
         int k1 = l << 16 | i1 << 8 | j1;
         GL11.glRotatef(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
@@ -79,7 +78,7 @@ public class RenderMagikaBubble extends Render
     /**
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
-    protected ResourceLocation getEntityTexture(EntityXPOrb p_110775_1_)
+    protected ResourceLocation getEntityTexture(EntityMagikaBubble entity)
     {
         return TEXTURE_LOCATION;
     }
@@ -87,9 +86,9 @@ public class RenderMagikaBubble extends Render
     /**
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
-    protected ResourceLocation getEntityTexture(Entity p_110775_1_)
+    protected ResourceLocation getEntityTexture(Entity entity)
     {
-        return this.getEntityTexture((EntityMagikaBubble)p_110775_1_);
+        return this.getEntityTexture((EntityMagikaBubble)entity);
     }
 
     /**

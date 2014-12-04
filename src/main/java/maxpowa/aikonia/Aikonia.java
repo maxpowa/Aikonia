@@ -1,6 +1,7 @@
 package maxpowa.aikonia;
 
 import maxpowa.aikonia.common.CommonProxy;
+import maxpowa.aikonia.common.entity.EntityMagikaBubble;
 import maxpowa.aikonia.common.event.AikoniaEventBus;
 import maxpowa.aikonia.common.items.AikoniaItems;
 import maxpowa.aikonia.common.packet.MagikaBubbleSoundPacket;
@@ -13,6 +14,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 /**
@@ -40,14 +42,10 @@ public class Aikonia
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		FMLCommonHandler.instance().bus().register(new AikoniaEventBus());
-		AikoniaItems.init();
-		net = NetworkRegistry.INSTANCE.newSimpleChannel(Aikonia.MODID);
-		net.registerMessage(MagikaBubbleSoundPacket.Handler.class, MagikaBubbleSoundPacket.class, 0, Side.CLIENT);
+		proxy.preInit(event);
 	}
 
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
-		proxy.registerRenderers();
 	}
 }
