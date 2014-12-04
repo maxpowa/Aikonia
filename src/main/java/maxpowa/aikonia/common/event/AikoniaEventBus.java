@@ -15,7 +15,7 @@ public class AikoniaEventBus {
     	if (event.side == Side.SERVER && event.phase == Phase.END) {
     		if (timeout < System.nanoTime()) {
     			//System.out.println("Spawning Magika Bubble");
-                event.player.worldObj.spawnEntityInWorld(new EntityMagikaBubble(event.player.worldObj, event.player.posX, event.player.posY+5, event.player.posZ, 1237));
+                event.player.worldObj.spawnEntityInWorld(new EntityMagikaBubble(event.player.worldObj, event.player.posX, event.player.posY+4, event.player.posZ, 1237));
     			timeout = System.nanoTime() + 250000000L;
     		}
     	}

@@ -61,29 +61,7 @@ public class EntityMagikaBubble extends Entity
     @SideOnly(Side.CLIENT)
     public int getBrightnessForRender(float p_70070_1_)
     {
-        float f1 = 0.5F;
-
-        if (f1 < 0.0F)
-        {
-            f1 = 0.0F;
-        }
-
-        if (f1 > 1.0F)
-        {
-            f1 = 1.0F;
-        }
-
-        int i = super.getBrightnessForRender(p_70070_1_);
-        int j = i & 255;
-        int k = i >> 16 & 255;
-        j += (int)(f1 * 15.0F * 16.0F);
-
-        if (j > 240)
-        {
-            j = 240;
-        }
-
-        return j | k << 16;
+        return 180;
     }
 
     /**
@@ -144,6 +122,7 @@ public class EntityMagikaBubble extends Entity
         
         AxisAlignedBB box = boundingBox.expand(0.1D, 0.1D, 0.1D);
         List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, box);
+        //list.addAll(this.worldObj.playerEntities);
 
         if (list != null && !list.isEmpty()) {
             for (Entity entity : list) {
