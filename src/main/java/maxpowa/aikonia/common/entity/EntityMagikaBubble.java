@@ -4,11 +4,9 @@ import maxpowa.aikonia.Aikonia;
 import maxpowa.aikonia.common.event.MagikaBubbleCollideEvent;
 import maxpowa.aikonia.common.packet.MagikaBubbleSoundPacket;
 import maxpowa.aikonia.common.util.Util;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
@@ -187,13 +185,6 @@ public class EntityMagikaBubble extends Entity
     {
         this.xpOrbAge = cmp.getShort("Age");
         this.xpValue = cmp.getShort("Value");
-    }
-
-    /**
-     * Called by a player entity when they collide with an entity
-     */
-    public void onCollideWithPlayer(EntityPlayer player)
-    {
     }
     
     @Override
