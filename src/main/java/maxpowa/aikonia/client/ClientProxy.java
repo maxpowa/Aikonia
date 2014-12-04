@@ -22,4 +22,9 @@ public class ClientProxy extends CommonProxy {
 			mc.thePlayer.playSound(soundId, 1.0F, 1.0F);
 	}
 	
+	@Override
+	public int registerArmor(String armor) {
+		return RenderingRegistry.addNewArmourRendererPrefix(armor);
+	}
+	
 }

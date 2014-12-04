@@ -52,7 +52,7 @@ public class RenderMagikaBubble extends Render
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)k / 1.0F, (float)l / 1.0F);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float f10 = 255.0F;
-        float f11 = ((float)entity.xpColor + partialTicks) / 2.0F;
+        float f11 = ((float)entity.bubbleColor + partialTicks) / 2.0F;
         l = (int)((MathHelper.sin(f11 + 4.1887903F) + 1.0F) * 0.1F * f10);
         int i1 = (int)((MathHelper.sin(f11 + 0.0F) + 1.0F) * 0.5F * f10);
         int j1 = (int)(f10-50f);

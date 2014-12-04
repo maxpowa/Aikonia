@@ -21,15 +21,15 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class EntityMagikaBubble extends Entity
 {
     /** A constantly increasing value that RenderXPOrb uses to control the colour shifting (Green / yellow) */
-    public int xpColor;
+    public int bubbleColor;
     /** The age of the XP orb in ticks. */
-    public int xpOrbAge;
+    public int bubbleAge;
     /** This is how much XP this orb has. */
-    public int xpValue;
+    public int bubbleSize;
     /** The closest EntityPlayer to this orb. */
     private EntityLiving closestEntity;
     /** Threshold color for tracking players */
-    private int xpTargetColor;
+    private int bubbleTargetColor;
 
     public EntityMagikaBubble(World world, double x, double y, double z, int value)
     {
@@ -41,7 +41,7 @@ public class EntityMagikaBubble extends Entity
         this.motionX = (double)((float)(Math.random() * 0.20000000298023224D) * 2.0F);
         this.motionY = (double)((float)(Math.random() * 0.2D) * 2.0F);
         this.motionZ = (double)((float)(Math.random() * 0.20000000298023224D) * 2.0F);
-        this.xpValue = value;
+        this.bubbleSize = value;
         this.noClip = true;
     }
 
@@ -104,7 +104,7 @@ public class EntityMagikaBubble extends Entity
 
         double d0 = 16.0D;
 
-        if (this.xpTargetColor < this.xpColor - 20 + this.getEntityId() % 100)
+        if (this.bubbleTargetColor < this.bubbleColor - 20 + this.getEntityId() % 100)
         {
             if (this.closestEntity == null || this.closestEntity.getDistanceSqToEntity(this) > d0 * d0 || this.closestEntity.isDead)
             {
@@ -112,7 +112,7 @@ public class EntityMagikaBubble extends Entity
                 //System.out.println("Getting close entity");
             }
 
-            this.xpTargetColor = this.xpColor;
+            this.bubbleTargetColor = this.bubbleColor;
         }
 
         if (this.closestEntity != null)
@@ -139,26 +139,21 @@ public class EntityMagikaBubble extends Entity
         this.motionY *= 0.5800000190734863D;
         this.motionZ *= (double)f;
 
-        ++this.xpColor;
-        ++this.xpOrbAge;
+        ++this.bubbleColor;
+        ++this.bubbleAge;
         
         AxisAlignedBB box = boundingBox.expand(0.1D, 0.1D, 0.1D);
         List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, box);
 
-        if (list != null && !list.isEmpty())
-        {
-            for (int k = 0; k < list.size(); ++k)
-            {
-                Entity entity = (Entity)list.get(k);
-
-                if (entity != this.riddenByEntity && entity.canBePushed())
-                {
+        if (list != null && !list.isEmpty()) {
+            for (Entity entity : list) {
+                if (entity != this.riddenByEntity) {
                     this.applyEntityCollision(entity);
                 }
             }
         }
 
-        if (this.xpOrbAge >= 6000)
+        if (this.bubbleAge >= 6000)
         {
             this.setDead();
         }
@@ -190,14 +185,14 @@ public class EntityMagikaBubble extends Entity
 
     public void writeEntityToNBT(NBTTagCompound cmp)
     {
-        cmp.setShort("Age", (short)this.xpOrbAge);
-        cmp.setShort("Value", (short)this.xpValue);
+        cmp.setShort("Age", (short)this.bubbleAge);
+        cmp.setShort("Size", (short)this.bubbleSize);
     }
 
     public void readEntityFromNBT(NBTTagCompound cmp)
     {
-        this.xpOrbAge = cmp.getShort("Age");
-        this.xpValue = cmp.getShort("Value");
+        this.bubbleAge = cmp.getShort("Age");
+        this.bubbleSize = cmp.getShort("Size");
     }
     
     @Override
@@ -231,7 +226,7 @@ public class EntityMagikaBubble extends Entity
      */
     public int getXpValue()
     {
-        return this.xpValue;
+        return this.bubbleSize;
     }
 
     /**
@@ -241,7 +236,7 @@ public class EntityMagikaBubble extends Entity
     @SideOnly(Side.CLIENT)
     public int getTextureByXP()
     {
-        return this.xpValue >= 2477 ? 10 : (this.xpValue >= 1237 ? 9 : (this.xpValue >= 617 ? 8 : (this.xpValue >= 307 ? 7 : (this.xpValue >= 149 ? 6 : (this.xpValue >= 73 ? 5 : (this.xpValue >= 37 ? 4 : (this.xpValue >= 17 ? 3 : (this.xpValue >= 7 ? 2 : (this.xpValue >= 3 ? 1 : 0)))))))));
+        return this.bubbleSize >= 2477 ? 10 : (this.bubbleSize >= 1237 ? 9 : (this.bubbleSize >= 617 ? 8 : (this.bubbleSize >= 307 ? 7 : (this.bubbleSize >= 149 ? 6 : (this.bubbleSize >= 73 ? 5 : (this.bubbleSize >= 37 ? 4 : (this.bubbleSize >= 17 ? 3 : (this.bubbleSize >= 7 ? 2 : (this.bubbleSize >= 3 ? 1 : 0)))))))));
     }
 
     /**

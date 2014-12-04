@@ -60,3 +60,4 @@ config/
 logs/
 usernamecache.json
 crash-reports/
+mods/
