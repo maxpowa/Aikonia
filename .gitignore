@@ -54,3 +54,8 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+saves/
+options.txt
+config/
+logs/
+usernamecache.json

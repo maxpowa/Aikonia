@@ -1,8 +1,8 @@
 package maxpowa.aikonia.common.event;
 
 import maxpowa.aikonia.common.entity.EntityMagikaBubble;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import cpw.mods.fml.common.eventhandler.Cancelable;
 
 /**
@@ -10,13 +10,13 @@ import cpw.mods.fml.common.eventhandler.Cancelable;
  * The event can be canceled, and no further processing will be done.  
  */
 @Cancelable
-public class PlayerPickupMagikaBubbleEvent extends PlayerEvent
+public class MagikaBubbleCollideEvent extends LivingEvent
 {
     public final EntityMagikaBubble orb;
 
-    public PlayerPickupMagikaBubbleEvent(EntityPlayer player, EntityMagikaBubble orb)
+    public MagikaBubbleCollideEvent(EntityLivingBase entity, EntityMagikaBubble orb)
     {
-        super(player);
+        super(entity);
         this.orb = orb;
     }
 }
