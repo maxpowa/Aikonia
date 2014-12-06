@@ -1,6 +1,8 @@
 package maxpowa.aikonia.common;
 
+import net.minecraftforge.common.MinecraftForge;
 import maxpowa.aikonia.Aikonia;
+import maxpowa.aikonia.common.blocks.AikoniaBlocks;
 import maxpowa.aikonia.common.entity.EntityMagikaBubble;
 import maxpowa.aikonia.common.event.AikoniaEventBus;
 import maxpowa.aikonia.common.items.AikoniaItems;
@@ -20,10 +22,14 @@ public class CommonProxy {
 		Aikonia.net.registerMessage(MagikaBubbleSoundPacket.Handler.class, MagikaBubbleSoundPacket.class, 0, Side.CLIENT);
 		
 		//Events
-		FMLCommonHandler.instance().bus().register(new AikoniaEventBus());
+		AikoniaEventBus eventBus = new AikoniaEventBus();
+		FMLCommonHandler.instance().bus().register(eventBus);
+		MinecraftForge.EVENT_BUS.register(eventBus);
 		
 		//Items
 		AikoniaItems.init();
+		//Blocks
+		AikoniaBlocks.init();
 		
 		//Entities
 		EntityRegistry.registerModEntity(EntityMagikaBubble.class, "magikaBubble", EntityRegistry.findGlobalUniqueEntityId(), Aikonia.instance, 64, 10, true);

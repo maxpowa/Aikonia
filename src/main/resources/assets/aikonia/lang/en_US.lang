@@ -5,3 +5,6 @@ itemGroup.aikonia=Aikonia
 item.hood_council.name=Council Hood
 item.robe_council.name=Council Robes
 item.boots_council.name=Council Boots
+
+## Blocks
+tile.magikaEmitter.name=Magika Emitter (debug)

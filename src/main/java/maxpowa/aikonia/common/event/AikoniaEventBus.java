@@ -1,24 +1,16 @@
 package maxpowa.aikonia.common.event;
 
-import maxpowa.aikonia.common.entity.EntityMagikaBubble;
+import maxpowa.aikonia.common.entity.MagikaExtension;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
+import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.relauncher.Side;
 
 public class AikoniaEventBus {
-	
-	long timeout = 0L;
 
     @SubscribeEvent
-    public void PlayerTickEvent(TickEvent.PlayerTickEvent event) {
-    	if (event.side == Side.SERVER && event.phase == Phase.END) {
-    		if (timeout < System.nanoTime()) {
-    			//System.out.println("Spawning Magika Bubble");
-                event.player.worldObj.spawnEntityInWorld(new EntityMagikaBubble(event.player.worldObj, event.player.posX, event.player.posY+4, event.player.posZ, 1237));
-    			timeout = System.nanoTime() + 250000000L;
-    		}
-    	}
+    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
 //    	if (event.side == Side.SERVER && event.phase == Phase.START) {
 //    		event.player.getExtendedProperties("");
 //    		WorldData data = WorldData.forWorld(event.player.worldObj);
@@ -32,9 +24,24 @@ public class AikoniaEventBus {
 //    			if (pools.hasKey(coords)) {
 //    				currentPool = pools.getLong(coords);
 //    			}
-//    		}
+//    		}-
 //    		data.markDirty();
 //    	}
     }
+    
+    @SubscribeEvent
+    public void onEntityConstructing(EntityConstructing event) {
+    	if (event.entity instanceof EntityLivingBase)
+    		MagikaExtension.register((EntityLivingBase) event.entity);
+    }
+    
+    @SubscribeEvent
+	public void onEntityRightClicked(EntityInteractEvent event) {
+    	if (event.entity instanceof EntityLivingBase) {
+    		MagikaExtension me = MagikaExtension.get((EntityLivingBase) event.entityPlayer);
+    		MagikaExtension mob = MagikaExtension.get((EntityLivingBase) event.target);
+    		System.out.println(String.format("\nMob Casting Pool: %s\nMob Channeling Pool: %s\nPlayer Casting Pool: %s\nPlayer Channeling Pool: %s", mob.casting_pool, mob.channeling_pool, me.casting_pool, me.channeling_pool));
+    	}
+	}
 	
 }

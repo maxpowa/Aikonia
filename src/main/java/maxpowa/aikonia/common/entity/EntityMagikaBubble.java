@@ -7,7 +7,6 @@ import maxpowa.aikonia.common.event.MagikaBubbleCollideEvent;
 import maxpowa.aikonia.common.packet.MagikaBubbleSoundPacket;
 import maxpowa.aikonia.common.util.Util;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,7 +26,7 @@ public class EntityMagikaBubble extends Entity
     /** This is how much XP this orb has. */
     public int bubbleSize;
     /** The closest EntityPlayer to this orb. */
-    private EntityLiving closestEntity;
+    private EntityLivingBase closestEntity;
     /** Threshold color for tracking players */
     private int bubbleTargetColor;
 
@@ -38,9 +37,9 @@ public class EntityMagikaBubble extends Entity
         this.yOffset = this.height / 2.0F;
         this.setPosition(x, y, z);
         this.rotationYaw = (float)(Math.random() * 360.0D);
-        this.motionX = (double)((float)(Math.random() * 0.20000000298023224D) * 2.0F);
-        this.motionY = (double)((float)(Math.random() * 0.2D) * 2.0F);
-        this.motionZ = (double)((float)(Math.random() * 0.20000000298023224D) * 2.0F);
+        this.motionX = (double)((float)((Math.random()-0.5D) * 0.20000000298023224D) * 2.0F);
+        this.motionY = (double)((float)((Math.random()-0.5D) * 0.2D) * 2.0F);
+        this.motionZ = (double)((float)((Math.random()-0.5D) * 0.20000000298023224D) * 2.0F);
         this.bubbleSize = value;
         this.noClip = true;
     }
@@ -122,7 +121,7 @@ public class EntityMagikaBubble extends Entity
         
         AxisAlignedBB box = boundingBox.expand(0.1D, 0.1D, 0.1D);
         List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, box);
-        //list.addAll(this.worldObj.playerEntities);
+        
 
         if (list != null && !list.isEmpty()) {
             for (Entity entity : list) {
@@ -185,6 +184,8 @@ public class EntityMagikaBubble extends Entity
             if (livingEntity != null)
             {
             	if (MinecraftForge.EVENT_BUS.post(new MagikaBubbleCollideEvent(livingEntity, this))) return;
+            	MagikaExtension magika = MagikaExtension.get(livingEntity);
+            	magika.channeling_pool += this.bubbleSize;
                 this.worldObj.playSoundAtEntity(entity, "random.orb", 0.1F, 0.5F * ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.8F));
                 if (livingEntity instanceof EntityPlayerMP)
                 	Aikonia.net.sendTo(new MagikaBubbleSoundPacket("random.orb"), (EntityPlayerMP)livingEntity);
