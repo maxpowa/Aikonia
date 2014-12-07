@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 public class BlockMagikaEmitter extends Block
@@ -38,7 +39,7 @@ public class BlockMagikaEmitter extends Block
     	if (!world.isRemote) {
     		if (timeout < System.nanoTime()) {
     			//System.out.println("Spawning Magika Bubble");
-                world.spawnEntityInWorld(new EntityMagikaBubble(world, x+0.5D, y+0.5D, z+0.5D, 1237));
+                world.spawnEntityInWorld(new EntityMagikaBubble(world, x+0.5D, y+0.5D, z+0.5D, MathHelper.floor_double(Math.random()*EntityMagikaBubble.MAX_BUBBLE_SIZE)));
     			timeout = System.nanoTime() + 250000000L;
     		}
     	}

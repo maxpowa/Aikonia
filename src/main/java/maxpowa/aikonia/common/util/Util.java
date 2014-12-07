@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class Util {
 
@@ -13,9 +14,9 @@ public class Util {
         EntityLivingBase entity = null;
         
         List<Entity> nearbyEntities = (List<Entity>)ent.worldObj.getEntitiesWithinAABBExcludingEntity(ent, ent.boundingBox.expand(range, range, range));
-        nearbyEntities.addAll(ent.worldObj.playerEntities);
         for (Entity e : nearbyEntities) {
         	if (e instanceof EntityLivingBase) {
+        		if (e instanceof EntityPlayer) continue;
 	            double currentDist = e.getDistanceSq(ent.posX, ent.posY, ent.posZ);
 	
 	            if (closestDistance == -1.0D || currentDist < closestDistance) {

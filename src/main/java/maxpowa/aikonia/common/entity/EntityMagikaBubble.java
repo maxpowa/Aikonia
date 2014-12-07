@@ -6,20 +6,24 @@ import maxpowa.aikonia.Aikonia;
 import maxpowa.aikonia.common.event.MagikaBubbleCollideEvent;
 import maxpowa.aikonia.common.packet.MagikaBubbleSoundPacket;
 import maxpowa.aikonia.common.util.Util;
+import maxpowa.aikonia.common.util.WorldData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityMagikaBubble extends Entity
 {
-    /** A constantly increasing value that RenderXPOrb uses to control the colour shifting (Green / yellow) */
+    public static int MAX_BUBBLE_SIZE = 10;
+	/** A constantly increasing value that RenderXPOrb uses to control the colour shifting (Green / yellow) */
     public int bubbleColor;
     /** The age of the XP orb in ticks. */
     public int bubbleAge;
@@ -27,8 +31,6 @@ public class EntityMagikaBubble extends Entity
     public int bubbleSize;
     /** The closest EntityPlayer to this orb. */
     private EntityLivingBase closestEntity;
-    /** Threshold color for tracking players */
-    private int bubbleTargetColor;
 
     public EntityMagikaBubble(World world, double x, double y, double z, int value)
     {
@@ -69,34 +71,23 @@ public class EntityMagikaBubble extends Entity
     @SuppressWarnings("unchecked")
 	public void onUpdate()
     {
-    	this.noClip = true;
-        super.onUpdate();
-        
-        this.motionY += 0.01;
+    	this.worldObj.theProfiler.startSection("magikabubble");
 
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
-        this.motionY -= 0.02D;
+        this.motionY -= 0.01D;
 
-        double d0 = 16.0D;
+        double range = 16.0D;
 
-        if (this.bubbleTargetColor < this.bubbleColor - 20 + this.getEntityId() % 100)
-        {
-            if (this.closestEntity == null || this.closestEntity.getDistanceSqToEntity(this) > d0 * d0 || this.closestEntity.isDead)
-            {
-                this.closestEntity = Util.getClosestLivingEntityToEntity(this, d0);
-                //System.out.println("Getting close entity");
-            }
-
-            this.bubbleTargetColor = this.bubbleColor;
+        if (this.bubbleColor % 50 == 0 || this.closestEntity == null || this.closestEntity.isDead || this.closestEntity.getDistanceSqToEntity(this) > range * range){
+            this.closestEntity = Util.getClosestLivingEntityToEntity(this, range);
         }
 
-        if (this.closestEntity != null)
-        {
-            double d1 = (this.closestEntity.posX - this.posX) / d0;
-            double d2 = (this.closestEntity.posY + (double)this.closestEntity.getEyeHeight() - this.posY) / d0;
-            double d3 = (this.closestEntity.posZ - this.posZ) / d0;
+        if (this.closestEntity != null) {
+            double d1 = (this.closestEntity.posX - this.posX) / range;
+            double d2 = (this.closestEntity.posY + (double)this.closestEntity.getEyeHeight() - this.posY) / range;
+            double d3 = (this.closestEntity.posZ - this.posZ) / range;
             double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
             double d5 = 1.0D - d4;
 
@@ -119,40 +110,31 @@ public class EntityMagikaBubble extends Entity
         ++this.bubbleColor;
         ++this.bubbleAge;
         
-        AxisAlignedBB box = boundingBox.expand(0.1D, 0.1D, 0.1D);
-        List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, box);
-        
-
-        if (list != null && !list.isEmpty()) {
-            for (Entity entity : list) {
-                if (entity != this.riddenByEntity) {
-                    this.applyEntityCollision(entity);
-                }
-            }
+        if (!worldObj.isRemote) {
+	        List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.expand(0.1D, 0.1D, 0.1D));
+	        if (list != null && !list.isEmpty()) {
+	            for (Entity entity : list) {
+	                if (entity != this.riddenByEntity) {
+	                    this.applyEntityCollision(entity);
+	                }
+	            }
+	        }
         }
 
-        if (this.bubbleAge >= 6000)
-        {
-            this.setDead();
+        if (this.bubbleAge >= 6000 || this.posY < -16.0D) {
+            this.setDead(true);
         }
+    	this.worldObj.theProfiler.endSection();
     }
     
-    /**
-     * Magika Bubbles shouldn't be affected by anything
-     */
-    public boolean handleWaterMovement()
-    {
-        return false;
+    @Override
+    public void moveEntity(double x, double y, double z) {
+        this.boundingBox.offset(x, y, z);
+        this.posX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0D;
+        this.posY = this.boundingBox.minY + (double)this.yOffset - (double)this.ySize;
+        this.posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0D;
     }
-
-    /**
-     * Magika Bubbles shouldn't be affected by anything
-     */
-    protected void dealFireDamage(int amountDamage)
-    {
-        return;
-    }
-
+    
     /**
      * Magika Bubbles shouldn't be affected by anything
      */
@@ -190,41 +172,47 @@ public class EntityMagikaBubble extends Entity
                 if (livingEntity instanceof EntityPlayerMP)
                 	Aikonia.net.sendTo(new MagikaBubbleSoundPacket("random.orb"), (EntityPlayerMP)livingEntity);
                 this.setDead();
-                //System.out.println("You killed me billy!");
             }
         }
     }
     
-    @Override
-    public void setDead() {
-    	//System.out.println("I've been set dead.");
-    	super.setDead();
+    public void setDead(boolean damageVeil) {
+    	if (!damageVeil) return;
+    	
+    	if (!this.worldObj.isRemote) {
+			WorldData data = WorldData.forWorld(this.worldObj);
+			NBTTagCompound tag = data.getData();
+			Chunk currentChunk = this.worldObj.getChunkFromBlockCoords(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posZ));
+		    ChunkCoordIntPair chunkLoc = currentChunk.getChunkCoordIntPair();
+		    
+		    String tagKey = "magika_pools_DIM"+this.dimension;
+			if (!tag.hasKey(tagKey)) tag.setTag(tagKey, new NBTTagCompound());
+				
+			NBTTagCompound pools = tag.getCompoundTag(tagKey);
+			String coords = chunkLoc.chunkXPos+","+chunkLoc.chunkZPos;
+			
+		    double currentPool = 0D;
+			if (pools.hasKey(coords)) currentPool = pools.getDouble(coords);
+			
+			currentPool += this.bubbleSize;
+			pools.setDouble(coords, currentPool);
+			
+			//System.out.println(String.format("\nCoords: %s\nPool: %s", coords, currentPool));
+			
+			data.setData(tag);
+			data.markDirty();
+		}
     }
 
-    /**
-     * Returns the XP value of this XP orb.
-     */
-    public int getXpValue()
+    public int getMagikaValue()
     {
         return this.bubbleSize;
     }
 
-    /**
-     * Returns a number from 1 to 10 based on how much XP this orb is worth. This is used by RenderXPOrb to determine
-     * what texture to use.
-     */
     @SideOnly(Side.CLIENT)
-    public int getTextureByXP()
+    public int getTexture()
     {
-        return this.bubbleSize >= 2477 ? 10 : (this.bubbleSize >= 1237 ? 9 : (this.bubbleSize >= 617 ? 8 : (this.bubbleSize >= 307 ? 7 : (this.bubbleSize >= 149 ? 6 : (this.bubbleSize >= 73 ? 5 : (this.bubbleSize >= 37 ? 4 : (this.bubbleSize >= 17 ? 3 : (this.bubbleSize >= 7 ? 2 : (this.bubbleSize >= 3 ? 1 : 0)))))))));
-    }
-
-    /**
-     * Get a fragment of the maximum experience points value for the supplied value of experience points value.
-     */
-    public static int getXPSplit(int p_70527_0_)
-    {
-        return p_70527_0_ >= 2477 ? 2477 : (p_70527_0_ >= 1237 ? 1237 : (p_70527_0_ >= 617 ? 617 : (p_70527_0_ >= 307 ? 307 : (p_70527_0_ >= 149 ? 149 : (p_70527_0_ >= 73 ? 73 : (p_70527_0_ >= 37 ? 37 : (p_70527_0_ >= 17 ? 17 : (p_70527_0_ >= 7 ? 7 : (p_70527_0_ >= 3 ? 3 : 1)))))))));
+        return Math.round((this.bubbleSize / EntityMagikaBubble.MAX_BUBBLE_SIZE) * 10);
     }
 
     /**

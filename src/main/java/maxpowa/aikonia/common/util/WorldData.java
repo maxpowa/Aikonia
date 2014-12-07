@@ -7,32 +7,38 @@ import net.minecraft.world.WorldSavedData;
 
 public class WorldData extends WorldSavedData {
 
-   final static String key = Aikonia.MODID;
-   
-   public static WorldData forWorld(World world) {
-      WorldData result = (WorldData) world.perWorldStorage.loadData(WorldData.class, key);
-      if (result == null)
-          world.perWorldStorage.setData(key, new WorldData(key));
-      return result;
-   }
-   
-   private NBTTagCompound data = new NBTTagCompound();
+	final static String key = Aikonia.MODID;
 
-   public WorldData(String tagName) {
-       super(tagName);
-   }
+	public static WorldData forWorld(World world) {
+		WorldData result = (WorldData) world.perWorldStorage.loadData(WorldData.class, key);
+		if (result == null) {
+			result = new WorldData(key);
+			world.perWorldStorage.setData(key, result);
+		}
+		return result;
+	}
 
-   @Override
-   public void readFromNBT(NBTTagCompound compound) {
-  	 data = compound.getCompoundTag(key);
-   }
+	private NBTTagCompound data = new NBTTagCompound();
 
-   @Override
-   public void writeToNBT(NBTTagCompound compound) {
-       compound.setTag(key, data);
-   }
+	public WorldData(String tagName) {
+		super(tagName);
+	}
 
-   public NBTTagCompound getData() {
-       return data;
-   }
+	@Override
+	public void readFromNBT(NBTTagCompound compound) {
+		data = compound.getCompoundTag(key);
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound compound) {
+		compound.setTag(key, data);
+	}
+
+	public NBTTagCompound getData() {
+		return data;
+	}
+	
+	public void setData(NBTTagCompound data) {
+		this.data = data;
+	}
 }

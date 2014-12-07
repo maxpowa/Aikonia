@@ -26,19 +26,18 @@ public class RenderMagikaBubble extends Render
         this.shadowOpaque = 0.75F;
     }
 
-    /**
-     * Actually renders the given argument. This is a synthetic bridge method, always casting down its argument and then
-     * handing it off to a worker function which does the actual work. In all probabilty, the class Render is generic
-     * (Render<T extends Entity) and this method has signature public void func_76986_a(T entity, double d, double d1,
-     * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
-     */
+    public void doRender(Entity entity, double x, double y, double z, float p_76986_8_, float partialTicks)
+    {
+        this.doRender((EntityMagikaBubble)entity, x, y, z, p_76986_8_, partialTicks);
+    }
+
     public void doRender(EntityMagikaBubble entity, double x, double y, double z, float f, float partialTicks)
     {
         //System.out.println("Rendering now...");
         GL11.glPushMatrix();
         GL11.glTranslatef((float)x, (float)y, (float)z);
         this.bindTexture(this.getEntityTexture(entity));
-        int i = entity.getTextureByXP();
+        int i = entity.getTexture();
         float f2 = (float)(i % 4 * 16 + 0) / 64.0F;
         float f3 = (float)(i % 4 * 16 + 16) / 64.0F;
         float f4 = (float)(i / 4 * 16 + 0) / 64.0F;
@@ -89,16 +88,5 @@ public class RenderMagikaBubble extends Render
     protected ResourceLocation getEntityTexture(Entity entity)
     {
         return this.getEntityTexture((EntityMagikaBubble)entity);
-    }
-
-    /**
-     * Actually renders the given argument. This is a synthetic bridge method, always casting down its argument and then
-     * handing it off to a worker function which does the actual work. In all probabilty, the class Render is generic
-     * (Render<T extends Entity) and this method has signature public void func_76986_a(T entity, double d, double d1,
-     * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
-     */
-    public void doRender(Entity entity, double x, double y, double z, float p_76986_8_, float partialTicks)
-    {
-        this.doRender((EntityMagikaBubble)entity, x, y, z, p_76986_8_, partialTicks);
     }
 }
