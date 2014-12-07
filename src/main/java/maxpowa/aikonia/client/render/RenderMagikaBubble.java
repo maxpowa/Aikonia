@@ -2,10 +2,12 @@ package maxpowa.aikonia.client.render;
 
 import maxpowa.aikonia.Aikonia;
 import maxpowa.aikonia.common.entity.EntityMagikaBubble;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
+import net.minecraft.profiler.Profiler;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
@@ -20,10 +22,13 @@ public class RenderMagikaBubble extends Render
 {
     private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(Aikonia.MODID, "textures/entity/magika_bubble.png");
 
+    private static Profiler profiler = null;
+    
     public RenderMagikaBubble()
     {
         this.shadowSize = 0.15F;
         this.shadowOpaque = 0.75F;
+        profiler = Minecraft.getMinecraft().mcProfiler;
     }
 
     public void doRender(Entity entity, double x, double y, double z, float p_76986_8_, float partialTicks)
@@ -33,6 +38,7 @@ public class RenderMagikaBubble extends Render
 
     public void doRender(EntityMagikaBubble entity, double x, double y, double z, float f, float partialTicks)
     {
+    	profiler.startSection("magika_bubble_render");
         //System.out.println("Rendering now...");
         GL11.glPushMatrix();
         GL11.glTranslatef((float)x, (float)y, (float)z);
@@ -51,7 +57,7 @@ public class RenderMagikaBubble extends Render
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)k / 1.0F, (float)l / 1.0F);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float f10 = 255.0F;
-        float f11 = ((float)entity.bubbleColor + partialTicks) / 2.0F;
+        float f11 = ((float)entity.bubbleColor + partialTicks) / 5.0F;
         l = (int)((MathHelper.sin(f11 + 4.1887903F) + 1.0F) * 0.1F * f10);
         int i1 = (int)((MathHelper.sin(f11 + 0.0F) + 1.0F) * 0.5F * f10);
         int j1 = (int)(f10-50f);
@@ -72,6 +78,7 @@ public class RenderMagikaBubble extends Render
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         GL11.glPopMatrix();
+        profiler.endSection();
     }
 
     /**

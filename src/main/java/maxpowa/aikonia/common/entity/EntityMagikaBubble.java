@@ -50,19 +50,22 @@ public class EntityMagikaBubble extends Entity
     	return false;
     }
 
-    public EntityMagikaBubble(World p_i1586_1_)
+    public EntityMagikaBubble(World world)
     {
-        super(p_i1586_1_);
+        super(world);
         this.setSize(0.25F, 0.25F);
         this.yOffset = this.height / 2.0F;
     }
 
     protected void entityInit() {}
 
+    public void setTargetEntity(EntityLivingBase target) {
+    	this.closestEntity = target;
+    }
+    
     @SideOnly(Side.CLIENT)
-    public int getBrightnessForRender(float p_70070_1_)
-    {
-        return 180;
+    public int getBrightnessForRender(float p_70070_1_) {
+        return 240;
     }
 
     /**
@@ -71,7 +74,7 @@ public class EntityMagikaBubble extends Entity
     @SuppressWarnings("unchecked")
 	public void onUpdate()
     {
-    	this.worldObj.theProfiler.startSection("magikabubble");
+    	this.worldObj.theProfiler.startSection("magika_bubble");
 
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
@@ -80,8 +83,10 @@ public class EntityMagikaBubble extends Entity
 
         double range = 16.0D;
 
-        if (this.bubbleColor % 50 == 0 || this.closestEntity == null || this.closestEntity.isDead || this.closestEntity.getDistanceSqToEntity(this) > range * range){
-            this.closestEntity = Util.getClosestLivingEntityToEntity(this, range);
+        if (this.bubbleColor % 50 == 0) {
+	        if (this.closestEntity == null || this.closestEntity.isDead || this.closestEntity.getDistanceSqToEntity(this) > range * range) {
+	            this.closestEntity = Util.getClosestLivingEntityToEntity(this, range);
+	        }
         }
 
         if (this.closestEntity != null) {

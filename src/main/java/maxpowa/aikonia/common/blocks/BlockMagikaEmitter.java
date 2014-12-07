@@ -40,7 +40,9 @@ public class BlockMagikaEmitter extends Block
     		if (timeout < System.nanoTime()) {
     			//System.out.println("Spawning Magika Bubble");
                 world.spawnEntityInWorld(new EntityMagikaBubble(world, x+0.5D, y+0.5D, z+0.5D, MathHelper.floor_double(Math.random()*EntityMagikaBubble.MAX_BUBBLE_SIZE)));
-    			timeout = System.nanoTime() + 250000000L;
+                world.spawnEntityInWorld(new EntityMagikaBubble(world, x+0.5D, y+0.5D, z+0.5D, MathHelper.floor_double(Math.random()*EntityMagikaBubble.MAX_BUBBLE_SIZE)));
+                world.spawnEntityInWorld(new EntityMagikaBubble(world, x+0.5D, y+0.5D, z+0.5D, MathHelper.floor_double(Math.random()*EntityMagikaBubble.MAX_BUBBLE_SIZE)));
+    			//timeout = System.nanoTime() + 10000L;
     		}
     	}
     	world.scheduleBlockUpdate(x, y, z, this, 1);
