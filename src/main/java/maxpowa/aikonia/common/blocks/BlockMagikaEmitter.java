@@ -36,6 +36,7 @@ public class BlockMagikaEmitter extends Block
 
 	@Override
 	public void updateTick(World world, int x, int y, int z, Random rand) {
+		world.theProfiler.startSection("aikonia");
     	if (!world.isRemote) {
     		if (timeout < System.nanoTime()) {
     			//System.out.println("Spawning Magika Bubble");
@@ -47,6 +48,7 @@ public class BlockMagikaEmitter extends Block
     	}
     	world.scheduleBlockUpdate(x, y, z, this, 1);
 		world.markBlockForUpdate(x, y, z);
+		world.theProfiler.endSection();
 	}
 	
 }

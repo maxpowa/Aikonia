@@ -16,7 +16,7 @@ public class Util {
         List<Entity> nearbyEntities = (List<Entity>)ent.worldObj.getEntitiesWithinAABBExcludingEntity(ent, ent.boundingBox.expand(range, range, range));
         for (Entity e : nearbyEntities) {
         	if (e instanceof EntityLivingBase) {
-        		if (e instanceof EntityPlayer) continue;
+        		//if (e instanceof EntityPlayer) continue;
 	            double currentDist = e.getDistanceSq(ent.posX, ent.posY, ent.posZ);
 	
 	            if (closestDistance == -1.0D || currentDist < closestDistance) {

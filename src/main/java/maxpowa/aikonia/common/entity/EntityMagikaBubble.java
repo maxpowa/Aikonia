@@ -31,6 +31,8 @@ public class EntityMagikaBubble extends Entity
     public int bubbleSize;
     /** The closest EntityPlayer to this orb. */
     private EntityLivingBase closestEntity;
+    /** Time the orb was created **/
+	private long inceptionTime = System.currentTimeMillis();
 
     public EntityMagikaBubble(World world, double x, double y, double z, int value)
     {
@@ -57,8 +59,6 @@ public class EntityMagikaBubble extends Entity
         this.yOffset = this.height / 2.0F;
     }
 
-    protected void entityInit() {}
-
     public void setTargetEntity(EntityLivingBase target) {
     	this.closestEntity = target;
     }
@@ -82,16 +82,20 @@ public class EntityMagikaBubble extends Entity
         this.motionY -= 0.01D;
 
         double range = 16.0D;
-
+        
+        this.worldObj.theProfiler.startSection("entity_check");
+        
         if (this.bubbleColor % 50 == 0) {
 	        if (this.closestEntity == null || this.closestEntity.isDead || this.closestEntity.getDistanceSqToEntity(this) > range * range) {
 	            this.closestEntity = Util.getClosestLivingEntityToEntity(this, range);
 	        }
         }
 
+        this.worldObj.theProfiler.endStartSection("pathing");
+        
         if (this.closestEntity != null) {
             double d1 = (this.closestEntity.posX - this.posX) / range;
-            double d2 = (this.closestEntity.posY + (double)this.closestEntity.getEyeHeight() - this.posY) / range;
+            double d2 = (this.closestEntity.posY + (double)this.closestEntity.getEyeHeight()/2 - this.posY) / range;
             double d3 = (this.closestEntity.posZ - this.posZ) / range;
             double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
             double d5 = 1.0D - d4;
@@ -105,6 +109,8 @@ public class EntityMagikaBubble extends Entity
             }
         }
 
+        this.worldObj.theProfiler.endStartSection("movement");
+        
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
         float f = 0.98F;
 
@@ -115,8 +121,10 @@ public class EntityMagikaBubble extends Entity
         ++this.bubbleColor;
         ++this.bubbleAge;
         
-        if (!worldObj.isRemote) {
-	        List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.expand(0.1D, 0.1D, 0.1D));
+        this.worldObj.theProfiler.endStartSection("collision");
+        
+        if (!worldObj.isRemote && this.bubbleColor % 50 == 0) {
+	        List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.expand(0.25D, 0.25D, 0.25D));
 	        if (list != null && !list.isEmpty()) {
 	            for (Entity entity : list) {
 	                if (entity != this.riddenByEntity) {
@@ -126,9 +134,13 @@ public class EntityMagikaBubble extends Entity
 	        }
         }
 
+        this.worldObj.theProfiler.endStartSection("age");
+        
         if (this.bubbleAge >= 6000 || this.posY < -16.0D) {
             this.setDead(true);
         }
+        
+        this.worldObj.theProfiler.endSection();
     	this.worldObj.theProfiler.endSection();
     }
     
@@ -152,12 +164,14 @@ public class EntityMagikaBubble extends Entity
     {
         cmp.setShort("Age", (short)this.bubbleAge);
         cmp.setShort("Size", (short)this.bubbleSize);
+        cmp.setLong("Inception_Time", (long)this.inceptionTime);
     }
 
     public void readEntityFromNBT(NBTTagCompound cmp)
     {
         this.bubbleAge = cmp.getShort("Age");
         this.bubbleSize = cmp.getShort("Size");
+        this.inceptionTime = cmp.getLong("Inception_Time");
     }
     
     @Override
@@ -182,7 +196,7 @@ public class EntityMagikaBubble extends Entity
     }
     
     public void setDead(boolean damageVeil) {
-    	if (!damageVeil) return;
+    	if (!damageVeil) this.setDead();
     	
     	if (!this.worldObj.isRemote) {
 			WorldData data = WorldData.forWorld(this.worldObj);
@@ -206,6 +220,7 @@ public class EntityMagikaBubble extends Entity
 			
 			data.setData(tag);
 			data.markDirty();
+			this.setDead();
 		}
     }
 
@@ -227,4 +242,13 @@ public class EntityMagikaBubble extends Entity
     {
         return false;
     }
+
+	public long getInceptionTime() {
+		return this.inceptionTime;
+	}
+
+	@Override
+	protected void entityInit() {
+		this.inceptionTime = System.currentTimeMillis();
+	}
 }

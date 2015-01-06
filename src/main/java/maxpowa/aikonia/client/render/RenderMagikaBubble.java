@@ -21,12 +21,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class RenderMagikaBubble extends Render
 {
     private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(Aikonia.MODID, "textures/entity/magika_bubble.png");
-
+    
     private static Profiler profiler = null;
     
     public RenderMagikaBubble()
     {
-        this.shadowSize = 0.15F;
+        this.shadowSize = 0.10F;
         this.shadowOpaque = 0.75F;
         profiler = Minecraft.getMinecraft().mcProfiler;
     }
@@ -41,40 +41,37 @@ public class RenderMagikaBubble extends Render
     	profiler.startSection("magika_bubble_render");
         //System.out.println("Rendering now...");
         GL11.glPushMatrix();
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         GL11.glTranslatef((float)x, (float)y, (float)z);
         this.bindTexture(this.getEntityTexture(entity));
-        int i = entity.getTexture();
+        
+        long diff = System.currentTimeMillis() - entity.getInceptionTime();
+        long i = diff/100 % (256);
         float f2 = (float)(i % 4 * 16 + 0) / 64.0F;
         float f3 = (float)(i % 4 * 16 + 16) / 64.0F;
         float f4 = (float)(i / 4 * 16 + 0) / 64.0F;
         float f5 = (float)(i / 4 * 16 + 16) / 64.0F;
-        float f6 = 1.0F;
-        float f7 = 0.5F;
-        float f8 = 0.25F;
+        
         int j = entity.getBrightnessForRender(partialTicks);
         int k = j % 65536;
         int l = j / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)k / 1.0F, (float)l / 1.0F);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        float f10 = 255.0F;
-        float f11 = ((float)entity.bubbleColor + partialTicks) / 5.0F;
-        l = (int)((MathHelper.sin(f11 + 4.1887903F) + 1.0F) * 0.1F * f10);
-        int i1 = (int)((MathHelper.sin(f11 + 0.0F) + 1.0F) * 0.5F * f10);
-        int j1 = (int)(f10-50f);
-        int k1 = l << 16 | i1 << 8 | j1;
         GL11.glRotatef(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-        float f9 = 0.3F;
-        GL11.glScalef(f9, f9, f9);
+        GL11.glScalef(0.3F, 0.3F, 0.3F);
+        
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.setColorRGBA_I(k1, 128);
+        tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F);
         tessellator.setNormal(0.0F, 1.0F, 0.0F);
-        tessellator.addVertexWithUV((double)(0.0F - f7), (double)(0.0F - f8), 0.0D, (double)f2, (double)f5);
-        tessellator.addVertexWithUV((double)(f6 - f7), (double)(0.0F - f8), 0.0D, (double)f3, (double)f5);
-        tessellator.addVertexWithUV((double)(f6 - f7), (double)(1.0F - f8), 0.0D, (double)f3, (double)f4);
-        tessellator.addVertexWithUV((double)(0.0F - f7), (double)(1.0F - f8), 0.0D, (double)f2, (double)f4);
+        tessellator.addVertexWithUV((double)(0.0F - 0.5F), (double)(0.0F - 0.25F), 0.0D, (double)f2, (double)f5);
+        tessellator.addVertexWithUV((double)(1.0F - 0.5F), (double)(0.0F - 0.25F), 0.0D, (double)f3, (double)f5);
+        tessellator.addVertexWithUV((double)(1.0F - 0.5F), (double)(1.0F - 0.25F), 0.0D, (double)f3, (double)f4);
+        tessellator.addVertexWithUV((double)(0.0F - 0.5F), (double)(1.0F - 0.25F), 0.0D, (double)f2, (double)f4);
         tessellator.draw();
+        
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         GL11.glPopMatrix();
